@@ -7,19 +7,21 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
 </p>
 
-## About Laravel
+## note
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as:
+- use [laragon](https://forum.laragon.org/topic/473/download-laragon)
+- wamp : Apache 2.4, Nginx 1.12, MySQL 5.7, PHP 7.1.7, Node.js 6.11, yarn 0.25.2 + ngrok, git, ...
+- (laragon panel) click 'Menu'→quick create→laravel→Project Name(aen233-blog)
+- (laragon panel) click 'Menu'→www->aen233-blog (http://aen233-blog.dev/)you can see beautifull 'laravel'.
+- (laragon panel) click 'Terminal'.Open cmd.
+- (cmd) git init,git add,git remote,git commit,git push.
+- (cmd) php aritisan make:auth.you can see LOGIN and REGISTER on welcome page.
+- open project with Phpstorm.
+- (phpstorm) .env→DB_DATABASE,DB_USERNAME,DB_PASSWORD.
+- (laragon panel) rightClick→MYSQL→Change root password
+- (cmd) php artisan migrate.you can register success and see Dashboard,you are logged in!
+- time 2017/8/13 0:59  laragon is awesome.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, yet powerful, providing tools needed for large, robust applications. A superb combination of simplicity, elegance, and innovation give you tools you need to build any application with which you are tasked.
 
 ## Learning Laravel
 
