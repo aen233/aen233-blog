@@ -12,15 +12,103 @@
 - use [laragon](https://forum.laragon.org/topic/473/download-laragon)
 - wamp : Apache 2.4, Nginx 1.12, MySQL 5.7, PHP 7.1.7, Node.js 6.11, yarn 0.25.2 + ngrok, git, ...
 - (laragon panel) click 'Menu'→quick create→laravel→Project Name(aen233-blog)
-- (laragon panel) click 'Menu'→www->aen233-blog (http://aen233-blog.dev/)you can see beautifull 'laravel'.
+- (laragon panel) click 'Menu'→www->aen233-blog (http://aen233-blog.dev/).you can see beautifull 'laravel'.
 - (laragon panel) click 'Terminal'.Open cmd.
 - (cmd) git init,git add,git remote,git commit,git push.
-- (cmd) php aritisan make:auth.you can see LOGIN and REGISTER on welcome page.
+- (cmd) php aritisan make:auth. you can see LOGIN and REGISTER on welcome page.
 - open project with Phpstorm.
 - (phpstorm) .env→DB_DATABASE,DB_USERNAME,DB_PASSWORD.
 - (laragon panel) rightClick→MYSQL→Change root password
 - (cmd) php artisan migrate.you can register success and see Dashboard,you are logged in!
 - time 2017/8/13 0:59  laragon is awesome.
+- (cmd) php artisan make:controller PostController --resource
+- (cmd) php artisan make:model Post -m
+- (phpstorm) migration post up()
+- (phpstorm) Route::resource('posts', 'PostController');
+
+- (phpstorm)将welcome视图中，指向home的一行修改为指向Post控制器的index
+
+
+     @if (Auth::check())
+         {{--<a href="{{ url('/home') }}">Home</a>--}}
+         <a href="{{ route('posts.index') }}">Articles</a>
+     @else
+               
+- (cmd) php artisan make:seeder PostTableSeeder
+- (phpstorm) 修改PostTableSeeder中的run()
+
+
+    public function run()
+        {
+            DB::table('posts')->delete();
+            
+            for ($i = 0; $i < 10; $i++) {
+                Post::create([
+                    'title' => 'Title ' . $i,
+                    'body' => 'Body ' . $i,
+                    'user_id' => 1,
+                ]);
+            }
+        }
+
+- (phpstorm) DatabaseSeeder
+
+
+    public function run()
+        {
+            // $this->call(UsersTableSeeder::class);
+             $this->call(PostTableSeeder::class);
+        }
+
+- (cmd) composer dump-autoload
+- (cmd) php artisan migrate:refresh --seed 
+- (phpstrom) create views.resources/views,New→PHP File(posts/index.blade)
+- (phpstorm) PostController
+
+
+     public function index()
+        {
+            return view('posts.index')->withPosts(Post::all());
+        }
+- (phpstorm) posts/index.blade.php
+     
+复制home.blade.php，粘贴到posts/index.blade.php。
+将
+
+    <div class="panel panel-default">
+        <div class="panel-heading">Dashboard</div>
+    
+        <div class="panel-body">
+            You are logged in!
+        </div>
+    </div>
+  
+替换为：
+
+     <ul>
+         @foreach ($posts as $post)
+             <li style="margin: 50px 0;">
+                 <div class="title">
+                     <a href="{{ route('posts.show',$post->id) }}">
+                         <h4>{{ $post->title }}</h4>
+                     </a>
+                 </div>
+                 <div class="body">
+                     <p>{{ $post->body }}</p>
+                 </div>
+             </li>
+         @endforeach
+     </ul>
+                
+- (phpstorm)create new views：posts目录下新建create,update,show.blade.php.
+
+目标是先完成文章的增删改查（只一个控制器，一个模型），然后是文章和评论的一对多关系，再然后是文章对标签的多对多关系，还有无处不在的用户关系。
+先只用ORM，解决基本逻辑关系，然后添加功能找合适的包，用IOC。
+今天本来是想折腾select2，弄tag好看一点的，笔记本里没有现成的博客系统，新下了laragon，真的好棒啊laragon
+一边写代码一边记笔记，好像很慢的样子。。。。记下来防忘记哈，也查漏补缺。
+删除和修改
+删除和修改的权限
+
 
 
 ## Learning Laravel
