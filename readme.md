@@ -30,7 +30,6 @@
 
 
      @if (Auth::check())
-         {{--<a href="{{ url('/home') }}">Home</a>--}}
          <a href="{{ route('posts.index') }}">Articles</a>
      @else
                
@@ -41,7 +40,6 @@
     public function run()
     {
         DB::table('posts')->delete();
-        
         for ($i = 0; $i < 10; $i++) {
             Post::create([
                 'title' => 'Title ' . $i,
@@ -56,7 +54,6 @@
 
     public function run()
     {
-        // $this->call(UsersTableSeeder::class);
          $this->call(PostTableSeeder::class);
     }
 
@@ -77,7 +74,6 @@
 
     <div class="panel panel-default">
         <div class="panel-heading">Dashboard</div>
-    
         <div class="panel-body">
             You are logged in!
         </div>
@@ -121,7 +117,6 @@
             发表新博文(话题)
         </a>
     </div>
-
     <div class="navbar-header">
         <a class="navbar-brand" href="{{ route('posts.index') }}">
             归档(List)
@@ -140,7 +135,6 @@
                 {!! implode('<br>', $errors->all()) !!}
             </div>
         @endif
-
         <form action="{{ route('posts.store') }}" method="POST">
             {!! csrf_field() !!}
             <input type="text" name="title" class="form-control" required="required" placeholder="请输入标题">
@@ -166,11 +160,9 @@
             'title' => 'required|unique:posts|max:255',
             'body' => 'required',
         ]);
-
         $post = new Post;
         $post->title = $request->title;
         $post->body = $request->body;
-
         if (Auth::user()->posts()->save($post))
         {
             return redirect()->route('posts.index');
@@ -220,7 +212,6 @@ User.php是make:auth后自动生成的，加上这个HasMany()函数以后可以
                 {!! implode('<br>', $errors->all()) !!}
             </div>
         @endif
-
         <form action="{{ route('posts.update',$post->id) }}" method="POST">
             {{ method_field('PATCH') }}
             {{ csrf_field() }}
@@ -246,12 +237,9 @@ User.php是make:auth后自动生成的，加上这个HasMany()函数以后可以
         'title' => 'required|max:255',
         'body' => 'required', // 必填
     ]);
-
     $post = Post::findOrFail($id);
-
     $post->title = $request->title;
     $post->body = $request->body;
-    
     if ($post->save()) {
         return redirect()->route('posts.show', $id);
     } else {
@@ -261,12 +249,11 @@ User.php是make:auth后自动生成的，加上这个HasMany()函数以后可以
 
     
     <div id="content" style="padding: 50px;">
-    <h1 style="text-align: center; margin-top: 50px;">{{ $post->title }}</h1>
+    <h1 style="text-align: center; margin-top: 50px;">{{$post->title}}</h1>
     <hr>
     <div id="date" style="text-align: right;">
         {{ $post->updated_at }}
     </div>
-
     <div id="date" style="text-align: right;">
         <a href="{{route('posts.edit',$post->id)}}" class="btn btn-success">编辑</a>
         <form action="{{route('posts.destroy',$post->id) }}" method="POST" style="display: inline;" >
@@ -297,6 +284,8 @@ User.php是make:auth后自动生成的，加上这个HasMany()函数以后可以
     return view('posts.index')->withPosts(Post::paginate(3));
 - (phpstorm)  views/posts/index.blade.php
 给endforeach下增加一行{!! $posts->links() !!}
+
+
 
 
     @endforeach
