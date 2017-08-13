@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Post;
 use Illuminate\Http\Request;
+use Auth;
 
 class PostController extends Controller
 {
@@ -17,7 +18,7 @@ class PostController extends Controller
 //        $posts = Post::all();
 //        $posts = Post::paginate(7);
 //        return view('posts.index',compact('posts'));
-        return view('posts.index')->withPosts(Post::all());
+        return view('posts.index')->withPosts(Post::paginate(3));
     }
 
     /**
@@ -27,7 +28,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+        return view('posts.create');
     }
 
     /**
@@ -38,7 +39,21 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'title' => 'required|unique:posts|max:255',
+            'body' => 'required',
+        ]);
+
+        $post = new Post;
+        $post->title = $request->title;
+        $post->body = $request->body;
+
+        if (Auth::user()->posts()->save($post))
+        {
+            return redirect()->route('posts.index');
+        } else {
+            return redirect()->back();
+        }
     }
 
     /**
@@ -49,7 +64,8 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        //
+        $post = Post::findOrFail($id);
+        return view('posts.show', compact('post'));
     }
 
     /**
@@ -60,7 +76,8 @@ class PostController extends Controller
      */
     public function edit($id)
     {
-        //
+        $post = Post::findOrFail($id);
+        return view('posts.edit', compact('post'));
     }
 
     /**
@@ -72,7 +89,21 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'title' => 'required|max:255',
+            'body' => 'required', // 必填
+        ]);
+
+        $post = Post::findOrFail($id);
+
+        $post->title = $request->title;
+        $post->body = $request->body;
+        
+        if ($post->save()) {
+            return redirect()->route('posts.show', $id);
+        } else {
+            return redirect()->back();
+        }
     }
 
     /**

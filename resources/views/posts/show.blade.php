@@ -4,26 +4,26 @@
     <div class="container">
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
-                {{--<div class="panel panel-default">--}}
-                    {{--<div class="panel-heading">Dashboard</div>--}}
+                <div id="content" style="padding: 50px;">
+                <h1 style="text-align: center; margin-top: 50px;">{{ $post->title }}</h1>
+                <hr>
+                <div id="date" style="text-align: right;">
+                    {{ $post->updated_at }}
+                </div>
 
-                    <div class="panel-body">
-                        <ul>
-                            @foreach ($posts as $post)
-                                <li style="margin: 50px 0;">
-                                    <div class="title">
-                                        <a href="{{ route('posts.show',['post'=>$post->id]) }}">
-                                            <h4>{{ $post->title }}</h4>
-                                        </a>
-                                    </div>
-                                    <div class="body">
-                                        <p>{{ $post->body }}</p>
-                                    </div>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                {{--</div>--}}
+                <div id="date" style="text-align: right;">
+                    <a href="{{route('posts.edit',$post->id)}}" class="btn btn-success">编辑</a>
+                    <form action="{{route('posts.destroy',$post->id) }}" method="POST" style="display: inline;" >
+                        {{ method_field('DELETE') }}
+                        {{ csrf_field() }}
+                        <button type="submit" class="btn btn-danger" >删除</button>
+                    </form>
+                </div>
+                <div id="content" style="margin: 20px;">
+                    <p>
+                        {{ $post->body }}
+                    </p>
+                </div>
             </div>
         </div>
     </div>

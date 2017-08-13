@@ -39,26 +39,26 @@
 
 
     public function run()
-        {
-            DB::table('posts')->delete();
-            
-            for ($i = 0; $i < 10; $i++) {
-                Post::create([
-                    'title' => 'Title ' . $i,
-                    'body' => 'Body ' . $i,
-                    'user_id' => 1,
-                ]);
-            }
+    {
+        DB::table('posts')->delete();
+        
+        for ($i = 0; $i < 10; $i++) {
+            Post::create([
+                'title' => 'Title ' . $i,
+                'body' => 'Body ' . $i,
+                'user_id' => 1,
+            ]);
         }
+    }
 
 - (phpstorm) DatabaseSeeder
 
 
     public function run()
-        {
-            // $this->call(UsersTableSeeder::class);
-             $this->call(PostTableSeeder::class);
-        }
+    {
+        // $this->call(UsersTableSeeder::class);
+         $this->call(PostTableSeeder::class);
+    }
 
 - (cmd) composer dump-autoload
 - (cmd) php artisan migrate:refresh --seed 
@@ -67,9 +67,9 @@
 
 
      public function index()
-        {
-            return view('posts.index')->withPosts(Post::all());
-        }
+    {
+        return view('posts.index')->withPosts(Post::all());
+    }
 - (phpstorm) posts/index.blade.php
      
 复制home.blade.php，粘贴到posts/index.blade.php。
@@ -100,7 +100,9 @@
          @endforeach
      </ul>
                 
-- (phpstorm)create new views：posts目录下新建create,update,show.blade.php.
+- (phpstorm)create new views：posts目录下新建create,edit,show.blade.php.
+
+![posts.index](http://osp85cwvh.bkt.clouddn.com/17-8-14/29970009.jpg)
 
 目标是先完成文章的增删改查（只一个控制器，一个模型），然后是文章和评论的一对多关系，再然后是文章对标签的多对多关系，还有无处不在的用户关系。
 先只用ORM，解决基本逻辑关系，然后添加功能找合适的包，用IOC。
@@ -109,8 +111,198 @@
 删除和修改
 删除和修改的权限
 
+嗯基本的CURD
+
+- (phpstorm) views/layouts/app.blade.php中，增加以下代码
 
 
+    <div class="navbar-header">
+        <a class="navbar-brand" href="{{ route('posts.create') }}">
+            发表新博文(话题)
+        </a>
+    </div>
+
+    <div class="navbar-header">
+        <a class="navbar-brand" href="{{ route('posts.index') }}">
+            归档(List)
+        </a>
+    </div>
+
+目的是给上方导航条加一个create和一个返回文章列表的地方
+- (phpstorm) views/posts/create.balde.php
+
+
+    <div class="panel-heading">新增一篇文章</div>
+    <div class="panel-body">
+        @if (count($errors) > 0)
+            <div class="alert alert-danger">
+                <strong>新增失败</strong> 输入不符合要求<br><br>
+                {!! implode('<br>', $errors->all()) !!}
+            </div>
+        @endif
+
+        <form action="{{ route('posts.store') }}" method="POST">
+            {!! csrf_field() !!}
+            <input type="text" name="title" class="form-control" required="required" placeholder="请输入标题">
+            <br>
+            <textarea name="body" rows="10" class="form-control" required="required" placeholder="请输入内容"></textarea>
+            <br>
+            <button class="btn btn-lg btn-info">新增文章</button>
+        </form>
+    </div>
+- (phpstorm) Postcontroller@create
+
+
+    public function create()
+    {
+        return view('posts.create');
+    }
+- (phpstorm) Postcontroller@store
+
+
+    public function store(Request $request)
+    {
+        $this->validate($request, [
+            'title' => 'required|unique:posts|max:255',
+            'body' => 'required',
+        ]);
+
+        $post = new Post;
+        $post->title = $request->title;
+        $post->body = $request->body;
+
+        if (Auth::user()->posts()->save($post))
+        {
+            return redirect()->route('posts.index');
+        } else {
+            return redirect()->back();
+        }
+    }
+
+ORM模型关系，用户与文章是一对多关系，要分别在Post和User模型中增加关系
+- (phpstorm) Post.php
+
+
+    class Post extends Model
+    {
+        public function user()
+        {
+            return $this->belongsTo('App\User');
+        }
+    }
+- (phpstorm) User.php
+User.php是make:auth后自动生成的，加上这个HasMany()函数以后可以使用Auth::user()->posts()->save($post)，新文章就自动保存到当前用户下了。
+
+
+    public function posts()
+    {
+        return $this->hasMany('App\Post');
+    }
+- (phpstorm) views/posts/index.blade.php 增加编辑和删除的按钮
+
+    
+    <div class="body">
+        <a href="{{route('posts.edit',$post->id)}}" class="btn btn-success">编辑</a>
+        <form action="{{route('posts.destroy',$post->id) }}" method="POST" style="display: inline;" >
+            {{ method_field('DELETE') }}
+            {{ csrf_field() }}
+            <button type="submit" class="btn btn-danger" >删除</button>
+        </form>
+    </div>
+- (phpstorm) views/posts/edit.blade.php 
+   
+   
+    <div class="panel-heading">编辑文章</div>
+    <div class="panel-body">
+        @if (count($errors) > 0)
+            <div class="alert alert-danger">
+                <strong>编辑失败</strong> 输入不符合要求<br><br>
+                {!! implode('<br>', $errors->all()) !!}
+            </div>
+        @endif
+
+        <form action="{{ route('posts.update',$post->id) }}" method="POST">
+            {{ method_field('PATCH') }}
+            {{ csrf_field() }}
+            <input type="text" name="title" class="form-control" required="required" placeholder="请输入标题" value="{{ $post->title }}">
+            <br>
+            <textarea name="body" rows="10" class="form-control" required="required" placeholder="请输入内容">{{ $post->body }}</textarea>
+            <br>
+            <button class="btn btn-lg btn-info">提交修改</button>
+        </form>
+    </div>
+- (phpstorm)  Postcontroller@edit
+
+    
+    public function edit($id)
+    {
+        $post = Post::findOrFail($id);
+        return view('posts.edit', compact('post'));
+    }
+- (phpstorm)  Postcontroller@update
+    
+    
+    $this->validate($request, [
+        'title' => 'required|max:255',
+        'body' => 'required', // 必填
+    ]);
+
+    $post = Post::findOrFail($id);
+
+    $post->title = $request->title;
+    $post->body = $request->body;
+    
+    if ($post->save()) {
+        return redirect()->route('posts.show', $id);
+    } else {
+        return redirect()->back();
+    }
+- (phpstorm) views/posts/show.blade.php 
+
+    
+    <div id="content" style="padding: 50px;">
+    <h1 style="text-align: center; margin-top: 50px;">{{ $post->title }}</h1>
+    <hr>
+    <div id="date" style="text-align: right;">
+        {{ $post->updated_at }}
+    </div>
+
+    <div id="date" style="text-align: right;">
+        <a href="{{route('posts.edit',$post->id)}}" class="btn btn-success">编辑</a>
+        <form action="{{route('posts.destroy',$post->id) }}" method="POST" style="display: inline;" >
+            {{ method_field('DELETE') }}
+            {{ csrf_field() }}
+            <button type="submit" class="btn btn-danger" >删除</button>
+        </form>
+    </div>
+    <div id="content" style="margin: 20px;">
+        <p>
+            {{ $post->body }}
+        </p>
+    </div>
+- (phpstorm)  Postcontroller@destory  删除比较简单，没有页面
+
+    
+    public function destroy($id)
+    {
+        $post = Post::findOrFail($id);
+        $post->delete();
+        return redirect()->route('posts.index');
+    }
+
+- index页显示分页
+- (phpstorm)  Postcontroller@index  将Post::all()改成Post::paginate(3)
+
+    
+    return view('posts.index')->withPosts(Post::paginate(3));
+- (phpstorm)  views/posts/index.blade.php
+给endforeach下增加一行{!! $posts->links() !!}
+
+
+    @endforeach
+    {!! $posts->links() !!}
+    
+很基础很小白的博客文章CURD完成啦。2017/8/14 00:51
 ## Learning Laravel
 
 Laravel has the most extensive and thorough documentation and video tutorial library of any modern web application framework. The [Laravel documentation](https://laravel.com/docs) is thorough, complete, and makes it a breeze to get started learning the framework.

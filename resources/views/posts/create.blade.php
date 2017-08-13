@@ -4,28 +4,24 @@
     <div class="container">
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
-                    <div class="panel-body">
-                        <ul>
-                            @foreach ($posts as $post)
-                                <li style="margin: 50px 0;">
-                                    <div class="title">
-                                        <a href="{{ route('posts.show',$post->id) }}">
-                                            <h4>{{ $post->title }}</h4>
-                                        </a>
-                                    </div>
-                                    <div class="body">
-                                        <a href="{{route('posts.edit',$post->id)}}" class="btn btn-success">编辑</a>
-                                        <form action="{{route('posts.destroy',$post->id) }}" method="POST" style="display: inline;" >
-                                            {{ method_field('DELETE') }}
-                                            {{ csrf_field() }}
-                                            <button type="submit" class="btn btn-danger" >删除</button>
-                                        </form>
-                                        <p>{{ $post->body }}</p>
-                                    </div>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
+                <div class="panel-heading">新增一篇文章</div>
+                <div class="panel-body">
+                    @if (count($errors) > 0)
+                        <div class="alert alert-danger">
+                            <strong>新增失败</strong> 输入不符合要求<br><br>
+                            {!! implode('<br>', $errors->all()) !!}
+                        </div>
+                    @endif
+
+                    <form action="{{ route('posts.store') }}" method="POST">
+                        {!! csrf_field() !!}
+                        <input type="text" name="title" class="form-control" required="required" placeholder="请输入标题">
+                        <br>
+                        <textarea name="body" rows="10" class="form-control" required="required" placeholder="请输入内容"></textarea>
+                        <br>
+                        <button class="btn btn-lg btn-info">新增文章</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

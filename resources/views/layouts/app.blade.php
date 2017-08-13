@@ -32,7 +32,17 @@
                         {{ config('app.name', 'Laravel') }}
                     </a>
                 </div>
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="{{ route('posts.create') }}">
+                        发表新博文(话题)
+                    </a>
+                </div>
 
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="{{ route('posts.index') }}">
+                        归档(List)
+                    </a>
+                </div>
                 <div class="collapse navbar-collapse" id="app-navbar-collapse">
                     <!-- Left Side Of Navbar -->
                     <ul class="nav navbar-nav">
