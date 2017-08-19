@@ -2,12 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PostRequest;
 use App\Post;
+use App\Tag;
 use Illuminate\Http\Request;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth', [
+            'only' => ['create','edit', 'update','destory']
+        ]);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -15,10 +23,8 @@ class PostController extends Controller
      */
     public function index()
     {
-//        $posts = Post::all();
-//        $posts = Post::paginate(7);
-//        return view('posts.index',compact('posts'));
-        return view('posts.index')->withPosts(Post::paginate(3));
+        $posts=Post::latest()->paginate(4);
+        return view('posts.index',compact('posts'));
     }
 
     /**
@@ -28,28 +34,21 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('posts.create');
+        $tags = Tag::pluck('name', 'id');
+        return view('posts.create',compact('tags'));
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param PostRequest $request
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
+    public function store(PostRequest $request)
     {
-        $this->validate($request, [
-            'title' => 'required|unique:posts|max:255',
-            'body' => 'required',
-        ]);
-
-        $post = new Post;
-        $post->title = $request->title;
-        $post->body = $request->body;
-
-        if (Auth::user()->posts()->save($post))
+        $inputs=$request->all();
+        $post=Auth::user()->posts()->create($inputs);
+        if ($post)
         {
+            $post->tags()->attach($request->input('tag_list'));
             return redirect()->route('posts.index');
         } else {
             return redirect()->back();
@@ -77,6 +76,7 @@ class PostController extends Controller
     public function edit($id)
     {
         $post = Post::findOrFail($id);
+        $this->authorize('update', $post);
         return view('posts.edit', compact('post'));
     }
 
@@ -95,7 +95,7 @@ class PostController extends Controller
         ]);
 
         $post = Post::findOrFail($id);
-
+        $this->authorize('update', $post);
         $post->title = $request->title;
         $post->body = $request->body;
         
@@ -115,6 +115,7 @@ class PostController extends Controller
     public function destroy($id)
     {
         $post=Post::find($id);
+        $this->authorize('delete', $post);
         $post->delete();
         return redirect()->route('posts.index');
     }

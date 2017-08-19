@@ -18,7 +18,7 @@ class PostTableSeeder extends Seeder
         for ($i = 0; $i < 10; $i++) {
             Post::create([
                 'title' => 'Title ' . $i,
-                'body' => 'Body ' . $i,
+                'content' => 'Body ' . $i,
                 'user_id' => 1,
             ]);
         }
