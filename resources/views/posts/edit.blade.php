@@ -19,7 +19,7 @@
                             {{ csrf_field() }}
                             <input type="text" name="title" class="form-control" required="required" placeholder="请输入标题" value="{{ $post->title }}">
                             <br>
-                            <textarea name="body" rows="10" class="form-control" required="required" placeholder="请输入内容">{{ $post->body }}</textarea>
+                            <textarea name="content" rows="10" class="form-control" required="required" placeholder="请输入内容">{{ $post->content }}</textarea>
                             <br>
                             <button class="btn btn-lg btn-info">提交修改</button>
                         </form>

@@ -80,15 +80,15 @@
 
             <div class="content">
                 <div class="title m-b-md">
-                    Laravel
+                    aen233-blog
                 </div>
 
                 <div class="links">
-                    <a href="https://laravel.com/docs">Documentation</a>
-                    <a href="https://laracasts.com">Laracasts</a>
-                    <a href="https://laravel-news.com">News</a>
-                    <a href="https://forge.laravel.com">Forge</a>
-                    <a href="https://github.com/laravel/laravel">GitHub</a>
+                    <a href="http://wx.cnsaga.com/park2/workby/">SAGA-workday</a>
+                    <a href="https://mubu.com/doc/1-Q2YMk6g7">Learn laravel</a>
+                    <a href="https://mubu.com/doc/2-p_e3pck7">about me</a>
+                    <a href="http://git.oschina.net/aen233">oschina</a>
+                    <a href="https://github.com/aen233">GitHub</a>
                 </div>
             </div>
         </div>

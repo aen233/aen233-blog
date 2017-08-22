@@ -16,11 +16,11 @@
                                 auther : <a href="#">{{ $post->user->name }}</a>&nbsp;&nbsp;
                                 time : <i class="fa fa-clock-o"></i>{{ $post->created_at->diffForHumans() }}&nbsp;&nbsp;
                                 标签 ：
-                                    @if($post->tags)
-                                        @foreach( $post->tags as $tag)
+                                @if($post->tags)
+                                    @foreach( $post->tags as $tag)
                                         <i class="fa fa-tag"></i><a href="{{route('tags.show',$tag->id)}}"> {{ $tag->name or '-'}}&nbsp;&nbsp;</a>
-                                        @endforeach
-                                    @endif
+                                    @endforeach
+                                @endif
 
                                 评论 :
                                 <a href="{{route('posts.show',$post->id)}}">{{ $post->comments->count() }}&nbsp;&nbsp;</a>
@@ -38,12 +38,12 @@
                                 @endcan
                             </div>
                             <div class="body">
-                                <p></p><p>{{ $post->content }}</p>
+                                {!! $post->content !!}
                             </div>
                         </li>
                     @endforeach
                     {!! $posts->links() !!}
                 </ul>
+            </div>
         </div>
-    </div>
 @endsection

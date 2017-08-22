@@ -15,13 +15,10 @@ class PostTableSeeder extends Seeder
     {
         DB::table('posts')->delete();
 
-        for ($i = 0; $i < 10; $i++) {
-            Post::create([
-                'title' => 'Title ' . $i,
-                'content' => 'Body ' . $i,
-                'user_id' => 1,
-            ]);
-        }
+        factory(App\User::class, 50)->create()->each(function ($u) {
+            $u->posts()->save(factory(App\Post::class)->make());
+        });
     }
+
 }
 

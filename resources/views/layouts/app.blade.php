@@ -12,11 +12,14 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+{{--    <link href="{{ asset('css/all.css') }}" rel="stylesheet" media='all'>--}}
     <link href="{{ asset('css/select2.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/font-awesome.css') }}" rel="stylesheet">
     <script src="{{ asset('js/app.js') }}"></script>
+{{--    <script src="{{ asset('js/all.js') }}"></script>--}}
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="{{ asset('js/select2.full.js') }}"></script>
+    @include('vendor.ueditor.assets')
 </head>
 <body>
     <div id="app">
@@ -86,7 +89,13 @@
             </div>
         </nav>
 
-        @yield('content')
+        <div class="container">
+            <section class="content">
+                <div class="pad group">
+                    @yield('content')
+                </div>
+            </section>
+        </div>
     </div>
 
     <!-- Scripts -->

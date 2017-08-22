@@ -91,14 +91,15 @@ class PostController extends Controller
     {
         $this->validate($request, [
             'title' => 'required|max:255',
-            'body' => 'required', // 必填
+            'content' => 'required', // 必填
         ]);
 
         $post = Post::findOrFail($id);
         $this->authorize('update', $post);
+
         $post->title = $request->title;
-        $post->body = $request->body;
-        
+        $post->content = $request->input('content');
+
         if ($post->save()) {
             return redirect()->route('posts.show', $id);
         } else {
